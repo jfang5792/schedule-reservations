@@ -1,12 +1,12 @@
-"""Data models for Scheduling Reservations app"""
+"""Data models for Reservation Scheduling app"""
 
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 
 db = SQLAlchemy()
 
+
 # ------------------------------------------------------------------------#
-
-
 class User(db.Model):
     """A User"""
 
@@ -16,11 +16,11 @@ class User(db.Model):
     created_at = db.Column(db.DateTime)
     updated_at = db.Column(db.DateTime)
 
-    appointments = db.relationship("User_Appointment", back_populates="user")
+    appointment = db.relationship("Appointment", back_populates="user")
 
     def __repr__(self):
         """Show user info."""
-        return f"<User user_id={self.user_id} username={self.username}>"
+        return f"<User user_id:{self.user_id} username:{self.username}>"
 
 
 class Appointment(db.Model):
@@ -28,38 +28,27 @@ class Appointment(db.Model):
 
     __tablename__ = "appointments"
     appointment_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    date = db.Column(db.Date)
-    time = db.Column(db.DateTime)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.user_id"))
+    date = db.Column(db.Date)  # date(2024, 9, 12) Represents September 12, 2024
+    time = db.Column(db.Time)  # (time) 14:30:00
+    # appt = Appointment(datetime(2024, 9, 12, 14, 30))  # September 12, 2024, at 2:30 PM
     available = db.Column(db.Boolean, default=True)
     booked = db.Column(db.Boolean, default=False)
-    created_at = db.Column(db.DateTime)
-    updated_at = db.Column(db.DateTime)
+    created_at = db.Column(db.DateTime, default=datetime.timezone.utc)
+    updated_at = db.Column(db.DateTime, default=datetime.timezone.utc)
 
-    users = db.relationship("UserAppointment", back_populates="appointment")
+    user = db.relationship("User", back_populates="appointment")
 
     def __repr__(self):
-        """Show user info."""
-        return f"<User user_id={self.user_id} username={self.username}>"
-
-
-class UserAppointment:
-    """A User's Appointment"""
-
-    __tablename__ = "user_appointments"
-    user_appointment_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-
-    user_id = db.Column(db.Integer, db.ForeignKey("user.user_id"))
-    appointment_id = db.Column(db.Integer, db.ForeignKey("appointment.appointments_id"))
-
-    user = db.relationship("User", back_populates="appointments")
-    appointment = db.relationship("Appointment", back_populates="users")
+        """Show appointment info."""
+        return f"<Appointment appointment_id:{self.appointment_id} user_id:{self.user_id} date:{self.date} time:{self.time}>"
 
 
 # ------------------------------------------------------------------------#
 def connect_to_db(app):
     """Connect to database."""
 
-    app.config["SQLALCHEMY_DATABASE_URI"] = f"postgresql:///reservations"
+    app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///reservations"
     app.config["SQLALCHEMY_ECHO"] = False
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
