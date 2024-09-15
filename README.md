@@ -2,9 +2,9 @@
 
 A web application where users can search for and book reservations for melon tastings.
 
-### User flow:
+#### User flow:
 
-A user can log in by entering their username, pick a date, choose an optional time range, be shown all the available reservations that meet the criteria, then book an appointment of their choice. If there are no reservations available, a message will be displayed indicating that. There is a page showing all reservations for a given user.
+A user logs in, picks a date, chooses a date and time range (optional), be shown all the available reservations that meet the criteria, then book an appointment of their choice. If there are no reservations available, a message will be displayed indicating that. There is a page showing all reservations for a given user.
 
 #### Restrictions:
 
@@ -15,4 +15,5 @@ A user can log in by entering their username, pick a date, choose an optional ti
 
 #### Wireframe
 ![wireframe](https://github.com/user-attachments/assets/775e5f23-43ad-438c-bb44-a789d31154af)
-
+#### Data Model
+![melon-tastings](https://github.com/user-attachments/assets/09dbdbf6-c35c-4835-96d0-5389cb365f9c)
