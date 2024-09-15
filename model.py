@@ -16,7 +16,7 @@ class User(db.Model):
     created_at = db.Column(db.DateTime)
     updated_at = db.Column(db.DateTime)
 
-    appointment = db.relationship("Appointment", back_populates="users")
+    appointment = db.relationship("Appointment", back_populates="user")
 
     def __repr__(self):
         """Show user info."""
@@ -37,11 +37,11 @@ class Appointment(db.Model):
     created_at = db.Column(db.DateTime)
     updated_at = db.Column(db.DateTime)
 
-    user = db.relationship("User", back_populates="appointments")
+    user = db.relationship("User", back_populates="appointment")
 
     def __repr__(self):
         """Show appointment info."""
-        return f"<Appointment appointment_id:{self.appointment_id} user_id:{self.user_id} Info:{self.date} at {self.time}>"
+        return f"<Appointment appointment_id:{self.appointment_id} of {self.user.username} (user_id:{self.user_id}) on date: {self.date} at {self.time}>"
 
 
 # ------------------------------------------------------------------------#
