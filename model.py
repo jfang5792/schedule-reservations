@@ -16,7 +16,7 @@ class User(db.Model):
     created_at = db.Column(db.DateTime)
     updated_at = db.Column(db.DateTime)
 
-    appointment = db.relationship("Appointment", back_populates="user")
+    appointment = db.relationship("Appointment", back_populates="users")
 
     def __repr__(self):
         """Show user info."""
@@ -34,14 +34,14 @@ class Appointment(db.Model):
     # appt = Appointment(datetime(2024, 9, 12, 14, 30))  # September 12, 2024, at 2:30 PM
     available = db.Column(db.Boolean, default=True)
     booked = db.Column(db.Boolean, default=False)
-    created_at = db.Column(db.DateTime, default=datetime.timezone.utc)
-    updated_at = db.Column(db.DateTime, default=datetime.timezone.utc)
+    created_at = db.Column(db.DateTime)
+    updated_at = db.Column(db.DateTime)
 
-    user = db.relationship("User", back_populates="appointment")
+    user = db.relationship("User", back_populates="appointments")
 
     def __repr__(self):
         """Show appointment info."""
-        return f"<Appointment appointment_id:{self.appointment_id} user_id:{self.user_id} date:{self.date} time:{self.time}>"
+        return f"<Appointment appointment_id:{self.appointment_id} user_id:{self.user_id} Info:{self.date} at {self.time}>"
 
 
 # ------------------------------------------------------------------------#
