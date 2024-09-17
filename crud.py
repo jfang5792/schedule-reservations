@@ -8,7 +8,6 @@ from datetime import datetime
 
 # ------------------------------------------------------------------------#
 
-
 def create_user(username):
     """Create new user"""
     new_user = User(username=username)
@@ -16,22 +15,18 @@ def create_user(username):
     db.session.commit()
     return new_user
 
-
 def login_user(username):
     """User logs in"""
     user = User.query.filter_by(username=username).first()
     return user
 
-
 def get_user_by_id(user_id):
     """Return a user by primary key."""
     return User.query.get(user_id)
 
-
 def get_user_by_username(username):
     """Return user by username"""
     return User.query.filter(User.username == username).first()
-
 
 # ------------------------------------------------------------------------#
 
@@ -58,10 +53,8 @@ def schedule_appointment(user_id, date, time):
             if available_slots: # if we are showing avail slots, tell user their slot isnt avail
                 return {
                     "error": "Time slot not available.",
-                    "message": "There are other available time slots on this date.",
-                    "available_slots": [
-                        slot.time.strftime("%H:%M") for slot in available_slots
-                    ],
+                    "message": "Other available time slots on this date:",
+                    "available_slots": [slot.time.strftime("%H:%M") for slot in available_slots],
                 }
             else:
                 return {"error": f"No appointments available on this date: {date}"}
@@ -87,29 +80,41 @@ def schedule_appointment(user_id, date, time):
         db.session.rollback()
         return {"error": f"Error occurred while scheduling: {str(e)}"}
 
-    #     # if existing_appt and existing_appt not in available or existing_appt not in booked:
-    #     if existing_appt and (existing_appt.available is False or existing_appt.booked is True):
-    #         return {"error": "Appointment slot is not available or has been booked."}
-    #     # if the appt slot is avail, create new scheduled appt
-    #     # slot wnt be avail so switch bool to False and booked bool to True
-    #     new_appt_scheduled = Appointment(username=username, date=date, time=time, available=False, booked=True)
-    #     db.session.add(new_appt_scheduled)
-    #     db.session.commit()
-    #     return {"success": "Appointment scheduled."}
-    #     # return new_appt_scheduled
-    # except Exception as e:
-    #     db.session.rollback()
-    #     return {"error": f"Error occurred while scheduling appointment: {str(e)}"}
-
 
 def get_appointments(user_id):
-    """Get appointments by user_id"""
-    appointment = Appointment.query.filter_by(user_id=user_id).all()
-    return appointment
+    """Return appointments of users by user_id"""
+    return Appointment.query.filter_by(user_id=user_id).all()
 
+def get_existing_reservations(date, time):
+    """Return reservations / booked appointments
+    pulling frm db, has to be from appointment obj"""
+    return Appointment.query.filter_by(date=date, time=time).first()
 
-def delete_place(user_id, appointment_id):
-    """Delete an appointment"""
+def get_appointment_slot(date, time, id=None):
+    """Return reservations / booked appointments without editing key id"""
+    appointment = Appointment.query.filter_by(date=date, time=time)
+    if id:
+        appointment = appointment.filter(Appointment.appointment_id != id)
+    return not appointment.first()
+
+def get_appointments_by_username(username):
+    """Return appointments of user by username"""
+    return Appointment.query.filter_by(Appointment.username == username).first()
+
+def get_appointment_slots_by_date(date):
+    """Return appointment slot times based on date input"""
+    return Appointment.query.filter(date=date, available=True, booked=False).all()
+
+def get_appointment_by_id(appointment_id):
+    """Return appointment based on appointment_id"""
+    return Appointment.query.get(appointment_id)
+
+def update_appt(appointment):
+    """Update appointment(s)"""
+    db.session.commit()
+
+def delete_appt(user_id, appointment_id):
+    """Delete appointment(s)"""
     appointment_to_delete = Appointment.query.filter_by(user_id=user_id, appointment_id=appointment_id).first()
     print(f"Appointment deleted:", appointment_to_delete)
     db.session.delete(appointment_to_delete)
