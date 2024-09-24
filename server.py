@@ -22,7 +22,7 @@ def register():
             return jsonify({"msg": "Username required", "status": "Error"}), 400
 
         if user:
-            msg = f"Username <{username}> already exists. Log in."
+            msg = f"Username {username} already exists. Sign in."
             status = "Error"
             return jsonify({"msg": msg, "status": status}), 409
         else:
@@ -39,7 +39,28 @@ def register():
 
     except Exception as e:
         print(f"Error in registration: {str(e)}")
-        return jsonify({"msg": "Error during registration", "status": "Error"}), 500
+        return jsonify({"msg": "There was a problem during registration", "status": "Error"}), 500
+
+
+@app.route("/api/login", methods=["POST"])
+def login():
+    """Log in as user"""
+    try:
+        data = request.json
+        print("Login info ->", data)
+        username = request.json.get("username")
+        user = crud.get_user_by_username(username)
+
+        if not user or user.username != username:
+            return jsonify({
+                    "msg": "Username not found. Try again or register a new account.",
+                    "status": "Error",
+                }), 401  # failed login error code
+
+    except Exception as e:
+        print(f"Login error: {str(e)}")
+        return jsonify({"status": "Error", "msg": str(e)}), 500
+
 
 
 
