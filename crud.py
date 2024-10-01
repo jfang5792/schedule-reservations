@@ -17,8 +17,7 @@ def create_user(username):
 
 def login_user(username):
     """User logs in"""
-    user = User.query.filter_by(username=username).first()
-    return user
+    return User.query.filter_by(username=username).first()
 
 def get_user_by_id(user_id):
     """Return a user by primary key."""
@@ -45,11 +44,13 @@ def schedule_appointment(user_id, date, time):
         appointment = Appointment.query.filter_by(date=date, time=time).first()
         if not appointment:
             return {"error": "Appointment doesn't exist."}
+
         # if appt is not avail meaning appt is booked, show/query avail appt slots on the same date
         if appointment.available is False and appointment.booked is True:
             available_slots = Appointment.query.filter(
                 date=date, available=True, booked=False
             ).all()
+
             if available_slots: # if we are showing avail slots, tell user their slot isnt avail
                 return {
                     "error": "Time slot not available.",
@@ -58,6 +59,7 @@ def schedule_appointment(user_id, date, time):
                 }
             else:
                 return {"error": f"No appointments available on this date: {date}"}
+
         # if appointment.available is True and appointment.booked is False:
         else:  # Create a new appointment
             if appointment.available is True and appointment.booked is False:
@@ -70,12 +72,15 @@ def schedule_appointment(user_id, date, time):
                     created_at=datetime.utcnow(),
                     updated_at=datetime.utcnow(),
                 )
+
                 # existing appt unavailable to prevent double booking if multiple users on same time
                 appointment.available = False
                 db.session.add(new_appointment)
                 db.session.commit()
+
             else:
                 return {"success": "Appointment scheduled."}
+
     except Exception as e:
         db.session.rollback()
         return {"error": f"Error occurred while scheduling: {str(e)}"}
